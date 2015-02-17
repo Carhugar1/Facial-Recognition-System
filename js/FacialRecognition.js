@@ -1,9 +1,9 @@
-/// <reference path="js/jquery-2.1.0.js" />
-/// <reference path="js/jquery-2.1.0-vsdoc.js" />
+/// <reference path="jquery-2.1.0.js" />
+/// <reference path="jquery-2.1.0-vsdoc.js" />
 
 $(function () {
     function doTraining() {
-
+        
     }
 
     function retrieveMatch(img) {
