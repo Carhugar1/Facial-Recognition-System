@@ -1,0 +1,14 @@
+body {
+    background-image: url(../imgs/bg.jpg);
+    background-size: 100% auto;
+}
+
+.content {
+    font-family:  monospace;
+    font-size: medium;
+    background-color: #e0e0e0;
+    min-width: 200px;
+    max-width: 800px;
+    min-height: 60px;
+    word-wrap: break-word;
+}
