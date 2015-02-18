@@ -7,11 +7,27 @@
     </head>
     <body>
 
-        <input type="button" id="trainBtn" value="Train" />
-        <input type="button" id="recognizeBtn" value="Recognize" />
+
+        <b>Upload Training Images:&nbsp;&nbsp;</b>
+        <form enctype="multipart/form-data">
+            <input name="file[]" id="trainingFiles" multiple type="file" />
+            <input type="button" value="Upload" />
+        </form>
+        <progress value="0" max="1"></progress>
+        <br />
+        <br />
+        <br />
+        <br />
+        <b>Upload Recognition Image:&nbsp;&nbsp;</b>
+        <input type="file" multiple id="recognizeBtn" />
+
+        <br />
+        <br />
         <a href="php/phptest.php">PHP TEST</a>
 
-        <br/><br/><br/>
+        <br />
+        <br />
+        <br />
         <div id="content" class="content">
             <!-- content -->
         </div>
