@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Team Maet | Home</title>
+		<link rel = "stylesheet" href="styles/main.css">
+		
+	</head>
+	
+	<body>
+		
+		<header>
+			<nav>
+				<h1>Class Attendance Facial Recognition System</h1>
+				<ul>
+					<li><a id="current" href = "index.html">Home</a></li>
+					<li><a  href = "upload.html">Upload Photo</a></li>
+					<li><a  href = "settings.html">Setting</a></li>
+					<li><a  href = "logout.html">Logout</a></li>
+				</ul>
+			</nav>
+		</header>
+		
+		<div>
+			
+			<p>
+			    <b>Today Attendance</b>
+				
+				<script type="text/javascript">
+					tmonth=new Array("January","February","March","April","May","June",
+					"July","August","September","October","November","December");
+
+					function GetClock(){
+					var d=new Date();
+					var nmonth=d.getMonth(),ndate=d.getDate(),nyear=d.getYear();
+					if(nyear<1000) nyear+=1900;
+
+
+						document.getElementById('clockbox').innerHTML=""+tmonth[nmonth]+" "+ndate+", "+nyear+"";
+						}
+
+					window.onload=function(){
+					GetClock();
+					setInterval(GetClock,1000);
+				}
+				</script>
+				
+				<div id="clockbox"></div>
+			</p>
+			
+			<p>
+				<img src ="http://browntrinityshowcase.com/wp-content/uploads/2011/09/2013-Class-Photo-1-001.jpg" 
+				height = "400" width = "550">
+			</p>
+		</div>
+		
+		
+		
+		<footer>
+			@2015 Team Maet 
+		</footer>
+	</body>
+	
+</html>
