@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Team Maet | Upload Photo</title>
+		<link rel = "stylesheet" href="styles/main.css">
+		
+	</head>
+	
+	<body>
+		
+		<header>
+			<nav>
+				<h1>Class Attendance Facial Recognition System</h1>
+				<ul>
+					<li><a href = "index.html">Home</a></li>
+					<li><a id = "current" href = "upload.html">Upload Photo</a></li>
+					<li><a href = "settings.html">Setting</a></li>
+					<li><a href = "logout.html">Logout</a></li>
+				</ul>
+			</nav>
+		</header>
+		
+		<div >
+			<p >
+				<b>Upload Training Images:&nbsp;&nbsp;</b>
+			
+				<form enctype="multipart/form-data">
+					<input name="file[]" id="trainingFiles" multiple type="file" />
+					<br>
+					<br>
+					<input type="button" value="Upload" />
+				</form>
+				 <br>
+				 
+				<progress value="0" max="1"></progress>
+			</p>
+			 
+			 <br>
+			 
+			<p>
+				<b>Upload Recognition Image:&nbsp;&nbsp;</b>
+				<br>
+				<br>
+				<input type="file" multiple id="recognizeBtn" />
+			</p>
+			
+			<br>
+			
+			<p>
+				<b>Test PHP:&nbsp;&nbsp;</b>
+				<a href="php/phptest.php">Test PHP</a>
+
+			</p>
+			
+			<p>
+				<div id="content" class="content">
+					<!-- content -->
+				</div>
+
+				<script type="text/javascript" src="js/jquery-2.1.0.js"></script>
+				<script type="text/javascript" src="js/FacialRecognition.js"></script>
+				
+			</p>
+		</div>
+		
+		
+		<footer>
+			@2015 Team Maet 
+		</footer>
+	</body>
+	
+</html>
