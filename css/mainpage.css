@@ -1,6 +1,8 @@
+
+
 body {
-    background-image: url(../imgs/bg.jpg);
-    background-size: 100% auto;
+    background: url(../imgs/bg.jpg) no-repeat center center fixed;
+    background-size: cover;
 }
 
 .content {
