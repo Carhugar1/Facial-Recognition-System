@@ -11,8 +11,8 @@
         <br />
         <div class="content">
             <?php
-                try {
-                    $db = new PDO('mysql:host=localhost;dbname=SE329Proj2;charset=utf8', 'root', 'potato44');
+               // try {
+                    $db = new PDO('mysql:host=a-slice.net;dbname=SE329Proj2;charset=utf8', 'root', 'potato44');
                     $stmt = $db->query("SELECT * FROM faces");
                     $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     require_once 'Console/Table.php';
@@ -32,10 +32,10 @@
                     $result = str_replace("\n", "<br/>", $result);
                     $result = str_replace(" ", "&nbsp;", $result);
                     echo $result;
-                } catch (PDOException $ex) {
-                    echo "An Error occured!"; //User friendly message/message you want to show to user
-                    echo $ex->getMessage();
-                }
+                //} catch (PDOException $ex) {
+               //     echo "An Error occured!"; //User friendly message/message you want to show to user
+               //     echo $ex->getMessage();
+               // }
             ?>
         </div>
     </body>
