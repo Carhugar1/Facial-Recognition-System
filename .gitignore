@@ -46,3 +46,7 @@ Temporary Items
 # random webmatrix shit
 bin/
 web.config
+
+
+# upload directory
+uploads/
