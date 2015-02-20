@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -11,7 +11,7 @@
         <b>Upload Training Images:&nbsp;&nbsp;</b>
         <form enctype="multipart/form-data">
             <input name="file[]" id="trainingFiles" multiple type="file" />
-            <input type="button" value="Upload" />
+            <input type="button" value="Upload" id="fileUpload" />
         </form>
         <progress value="0" max="1"></progress>
         <br />
@@ -24,6 +24,13 @@
         <br />
         <br />
         <a href="php/phptest.php">PHP TEST</a>
+        <br/><br/>
+
+        <input type="text" id="namespace" />
+        <input type="button" id="getImages" value="Get Images" />
+        <div id="imgs">
+
+        </div>
 
         <br />
         <br />
@@ -31,6 +38,7 @@
         <div id="content" class="content">
             <!-- content -->
         </div>
+
 
         <script type="text/javascript" src="js/jquery-2.1.0.js"></script>
         <script type="text/javascript" src="js/FacialRecognition.js"></script>
