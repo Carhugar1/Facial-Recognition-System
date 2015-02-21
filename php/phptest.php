@@ -9,7 +9,7 @@
         <b>Querying Database...</b>
         <br />
         <br />
-        <div class="content">
+        <div id="content" class="content">
             <?php
                // try {
                     $db = new PDO('mysql:host=a-slice.net;dbname=SE329Proj2;charset=utf8', 'root', 'potato44');
