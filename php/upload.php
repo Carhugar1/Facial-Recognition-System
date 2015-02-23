@@ -1,5 +1,6 @@
 <?php
 	require_once('betaface/api.php');
+    require_once('dbfunctions.php');
 
     //
     
@@ -10,27 +11,20 @@
     
     $numimgs = count($_FILES['file']['name']);
     for ($i=0; $i < $numimgs; $i++) {
+        $log = new logger();
         $target = $uploadpath . $_FILES['file']['name'][$i];
         if (move_uploaded_file($_FILES['file']['tmp_name'][$i], $target)) {
-            echo '[successfully uploaded ' . $target . ']<br/>';	  
+            $log->log('[successfully uploaded ' . $target . ']<br/>');	  
 
-			echo '<br/>Starting betaface analysis...<br/>';
-			$api = new betaFaceApi();
+			$log->log('<br/>Starting betaface analysis...<br/>');
+			$api = new betaFaceApi($log);
 			$api->log_level = 2;
 
-			$exif_data = exif_read_data($target);
-			$datetime=$exif_data['DateTimeOriginal'];
-
-
-			$dateStr = date("c", strtotime($datetime));
-			$personID = "image_".$dateStr . "@a-slice.net_001";
-			$upload_response = $api->upload_face($target, $personID);
-
-			echo "Upload complete for '$personID'<pre>";
-			print_r($upload_response);
-			echo "</pre>";
+			$result = $api->upload_face_multiple($target);            
+            echo json_encode(array("uids" => $result, "log" => $log->get_log()));
         } else {
-            echo '[failed to upload' . $target . '...]<br/>';   
+            $log->log('[failed to upload' . $target . '...]<br/>');   
+            echo json_encode(array("uids" => array(), "log" => $log->get_log()));
         }
     }
 ?>

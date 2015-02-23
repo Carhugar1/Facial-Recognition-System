@@ -4,6 +4,22 @@ define("DEFAULT_API_SECRET", '171e8465-f548-401d-b63b-caf0dc28df5f');
 define("DEFAULT_API_URL",'http://www.betafaceapi.com/service.svc');
 define("DEFAULT_POLL_INTERVAL",1);
 
+class logger {
+    var $log;
+
+    function logger() {
+        $this->log = '';
+    }
+
+    function log($text) {
+        $this->log .= $text . "<br/>";
+    }
+
+    function get_log() {
+        return $this->log;
+    }
+}
+
 class betaFaceApi
 {
     var $api_key;
@@ -11,6 +27,7 @@ class betaFaceApi
     var $api_url;
     var $poll_interval;
     var $log_level = -1;
+    var $log;
     
     function _betaFaceApi($api_key,$api_secret,$api_url,$poll_interval)
     {
@@ -20,12 +37,13 @@ class betaFaceApi
         $this->poll_interval = $poll_interval;
     }
     
-    function betaFaceApi()
+    function betaFaceApi($log)
     {
         $this->api_key = DEFAULT_API_KEY;
         $this->api_secret= DEFAULT_API_SECRET;
         $this->api_url = DEFAULT_API_URL;
-        $this->poll_interval = DEFAULT_POLL_INTERVAL;        
+        $this->poll_interval = DEFAULT_POLL_INTERVAL;      
+        $this->log = $log;  
         return true;
     }    
 
@@ -79,13 +97,51 @@ class betaFaceApi
             $result = $this->api_call('GetImageInfo', array('image_uid' => $img_uid));
         }
         
-        if($result['face_uid'])
-            $face_uid = $result['face_uid'];
+        if($result['face_uid']) {
+            if (sizeof($result['face_uid']) != 1) {
+                $this->logger("Error: found " . sizeof($result['face_uid']) . " faces, was expecting exactly 1.");
+                return false;
+            }
+
+            $face_uid = $result['face_uid'][0];
         
-        // Step 3: associate the face with the person via Faces_SetPerson endpoint
+            // Step 3: associate the face with the person via Faces_SetPerson endpoint
+            $result = set_person_id($face_uid, $person_id);
+        }
+        return $result;
+    }
+
+    function set_person_id($face_uid, $person_id) {
+         // Step 3: associate the face with the person via Faces_SetPerson endpoint
         $params = array('face_uid' => $face_uid, 'person_id' => $person_id);
         $result = $this->api_call('Faces_SetPerson', $params);
         return $result;
+    }
+
+    function upload_face_multiple($filename) {
+        // Step 1: Encode image in base 64, upload it to service and get image ID
+        $image_raw = file_get_contents($filename);
+        $image_encoded = base64_encode($image_raw);
+        $params = array("base64_data" => $image_encoded,"original_filename" => $filename);
+        $result = $this->api_call('UploadNewImage_File', $params);
+        if(!$result)
+        {
+            $this->logger("API call to upload image failed!");
+            return false;
+        } 
+        
+        // Step 2: keep polling the GetImageInfo endpoint until the processing of the uploaded image is ready.
+        $img_uid = $result['img_uid'];
+        $result = $this->api_call('GetImageInfo', array('image_uid' => $img_uid));
+        while(!$result['ready'])
+        {
+            sleep($this->poll_interval);
+            $result = $this->api_call('GetImageInfo', array('image_uid' => $img_uid));
+        }
+
+
+        // return list of face UIDs
+        return $result['face_uid'];
     }
     
         
@@ -201,10 +257,8 @@ class betaFaceApi
     function logger($text,$level=0)
     {
         if($this->log_level>$level)
-            echo $text."<BR>";
+            $this->log->log($text);
     }
-
-    
     
     
     function render_template($template_file,$context)
@@ -241,11 +295,9 @@ class betaFaceApi
 
 	function parse_Faces_SetPerson($response) {
 		$response_xml = simplexml_load_string($response);
-		$success = $response_xml->xpath('.//int_response');
-		if (count($success) == 0) {
-			return false;
-		}
+		$success = $response_xml->xpath('int_response');
 		$result['success'] = (trim($success[0]) == '0');
+        return $result;
 	}
     
     /**
@@ -273,7 +325,12 @@ class betaFaceApi
             $this->logger("No faces found in image!");
             return $result;
         }
-        $result['face_uid'] = trim($face_uids[0]);
+
+        $trimfunc = function($val) {
+            return trim($val);
+        };
+
+        $result['face_uid'] = array_map($trimfunc, $face_uids);
         return $result;
     }
     
@@ -295,6 +352,9 @@ class betaFaceApi
         if (!$result['ready'])
             return $result;
 
+    
+        $result['xml'] = $response_xml;
+
         // Otherwise, see if we have face info
         $face_info = $response_xml->xpath(".//face_info");
         if (count($face_info) == 0)
@@ -303,6 +363,10 @@ class betaFaceApi
             return $result;
         }
         $result['face_info'] = $face_info[0];
+
+        $face_image = $response_xml->face_image;
+        $result['face_image'] = $face_image;
+
         return $result;
     }    
     
