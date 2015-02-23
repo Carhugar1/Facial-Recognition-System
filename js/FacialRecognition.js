@@ -10,7 +10,7 @@ $(function () {
         if (window.FormData) {
             var formData = new FormData(formData);
             $('body').spin("modal");
-                                       
+
             $.ajax({
                 url: 'php/upload.php',  //Server script to process data
                 type: 'POST',
@@ -29,7 +29,7 @@ $(function () {
                 beforeSend: function () { },
                 success: function (data) {
                     $('body').spin("modal");
-                                       
+
                     data = $.parseJSON(data);
                     if (data) {
                         if (data.uids) {
@@ -44,8 +44,10 @@ $(function () {
                         }
                     }
                 },
-                error: function (error) {  $('body').spin("modal");
-                                       glob = error; log('Error: ' + error); },
+                error: function (error) {
+                    $('body').spin("modal");
+                    glob = error; log('Error: ' + error);
+                },
                 // Form data
                 data: formData,
                 //Options to tell jQuery not to process data or worry about content-type.
@@ -63,28 +65,30 @@ $(function () {
         }
 
         var thumbs = $('#thumbnails');
-		
-		thumbs.append('<table>'); //table begin
-		
+
+        table = $('<table></table>');
+        thumbs.append(table); //table begin
+
         for (var i = 0; i < uids.length; i++) {
             var uid = uids[i];
-			
-			if ((i % 5) == 0) thumbs.append('<tr>'); //table row
-			
-			thumbs.append('<td>'); //table data
-            
-			makeThumbnail(uid, thumbs);
-			
-			thumbs.append('</td>'); // end table data
-			
-			if ((i % 5) == 0) thumbs.append('</tr>'); // end table row
+
+            // append new row every 5 faces
+            if ((i % 5) == 0) {
+                table.append(tr = $("<tr></tr>"));
+            }
+
+            td = $('<td></td>');
+            tr.append(td); //table data
+
+            makeThumbnail(uid, (function (td) {
+                return function (thumbHTML) {
+                    td.append(thumbHTML);
+                }
+            })(td));
         }
-		
-		thumbs.append('</table>'); // end table
-		
     }
 
-    function makeThumbnail(uid, thumbs) {
+    function makeThumbnail(uid, callback) {
         $.ajax({
             type: 'POST',
             url: 'php/dbhandler.php',  //Server script to process data
@@ -151,8 +155,9 @@ $(function () {
                                     }
                                 })
                                 );
-                    thumbs.append(html);
-                    thumbs.append('<br/>');
+                    callback(html);
+                    // thumbs.append(html);
+                    //   thumbs.append('<br/>');
                 }
                 else {
                     console.log(obj.error);
