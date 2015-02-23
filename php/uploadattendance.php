@@ -25,7 +25,7 @@
         if (move_uploaded_file($_FILES['file']['tmp_name'][$i], $target)) {
             
             $db->exec("INSERT INTO Students (date, referencepath)
-            VALUES (date("Y-m-d", $target)");
+            VALUES (" . date("Y-m-d") . ", $target)");
             
             echo '[successfully uploaded ' . $target . ']<br/>';	  
         } else {
