@@ -63,10 +63,25 @@ $(function () {
         }
 
         var thumbs = $('#thumbnails');
+		
+		thumbs.append('<table>'); //table begin
+		
         for (var i = 0; i < uids.length; i++) {
             var uid = uids[i];
-            makeThumbnail(uid, thumbs);
+			
+			if ((i % 5) == 0) thumbs.append('<tr>'); //table row
+			
+			thumbs.append('<td>'); //table data
+            
+			makeThumbnail(uid, thumbs);
+			
+			thumbs.append('</td>'); // end table data
+			
+			if ((i % 5) == 0) thumbs.append('</tr>'); // end table row
         }
+		
+		thumbs.append('</table>'); // end table
+		
     }
 
     function makeThumbnail(uid, thumbs) {
