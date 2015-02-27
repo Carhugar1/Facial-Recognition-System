@@ -101,60 +101,107 @@ $(function () {
                     var html = $('<div></div>')
                                 .attr('id', uid)
                                 .append($('<img></img>', {
-                                    //width: "200",
-                                    // height: "200",
-                                    src: faceThumbnail
+                                    width: "200",
+                                    height: "280",
+                                    src: faceThumbnail,
+                                    id: 'img-' + uid
                                 })
                                 )
                                 .append('<br/>')
                                 .append($('<input></input>', {
                                     type: "text",
-                                    width: "116",
+                                    width: "196",
                                     id: 'name-' + uid
                                 })
+                                    .keypress(function (e) {
+                                        if (e.which == 13) {
+                                            $('#setname-' + uid).click();
+                                        }
+                                    })
+                                )
+                                .append('<br/>')
+                                .append($('<input></input>', {
+                                        type: "button",
+                                        width: "120",
+                                        value: "Not a Face?",
+                                        id: "notaface-" + uid,
+                                        tabindex: -1
+                                    })
+                                    .click(function () {
+                                        if ($(this).attr('value') === 'Show Image') {
+                                             $(this).attr('value', 'Not a Face?');
+                                            $('#img-' + uid).show();
+                                            $('#name-' + uid).show();
+                                            $('#setname-' + uid).show();
+                                            $('#log-' + uid).show();
+                                        } else {
+                                            $(this).attr('value', 'Show Image');
+                                            $('#img-' + uid).hide();
+                                            $('#name-' + uid).hide();
+                                            $('#setname-' + uid).hide();
+                                            $('#log-' + uid).hide();
+                                        }
+                                    })
+                                    .css('margin-left', 'auto')
+                                    .css('margin-right', 'auto')
                                 )
                                 .append($('<input></input>', {
                                     type: "button",
                                     width: "80",
                                     value: "Set Name",
-                                    id: "setname-" + uid
+                                    id: "setname-" + uid,
+                                    tabindex: -1
                                 })
-                                .data('uid', uid)
-                                .click(function () {
-                                    var uid = $(this).data('uid');
-                                    var personID = $('#name-' + uid).val();
-                                    if (personID && /[a-zA-Z ]@[a-zA-Z\.]/.test(personID)) {
-                                        $('body').spin("modal");
-                                        $.ajax({
-                                            type: "POST",
-                                            url: 'php/dbhandler.php',
-                                            dataType: 'json',
-                                            data: { functionname: 'setPersonID', uid: uid, personID: personID },
+                                    .data('uid', uid)
+                                    .click(function () {
+                                        var uid = $(this).data('uid');
+                                        var personID = $('#name-' + uid).val();
+                                        if (personID && /[a-zA-Z ]@[a-zA-Z\.]/.test(personID)) {
+                                            $('body').spin("modal");
+                                            $.ajax({
+                                                type: "POST",
+                                                url: 'php/dbhandler.php',
+                                                dataType: 'json',
+                                                data: { functionname: 'setPersonID', uid: uid, personID: personID },
 
-                                            success: function (obj, textstatus) {
-                                                $('body').spin("modal");
-                                                if (!('error' in obj)) {
-                                                    console.log(obj);
-                                                    alert('success');
+                                                success: function (obj, textstatus) {
+                                                    $('body').spin("modal");
+                                                    if (!('error' in obj)) {
+                                                        console.log(obj);
+                                                        if (obj.result.success) {
+                                                            $('#log-' + uid).val('Name set: ' + obj.result.personID);
+                                                        }
+                                                    }
+                                                    else {
+                                                        console.log(obj.error);
+                                                    }
+
+                                                },
+
+                                                error: function (error) {
+                                                    $('body').spin("modal");
+                                                    console.log('Error: ' + error);
                                                 }
-                                                else {
-                                                    console.log(obj.error);
-                                                }
-
-                                            },
-
-                                            error: function (error) {
-                                                $('body').spin("modal");
-                                                console.log('Error: ' + error);
-                                            }
-                                        });
-                                    } else {
-                                        var msg = 'Error: "' + personID + '" is not a valid person ID';
-                                        log(msg);
-                                        alert(msg);
-                                    }
+                                            });
+                                        } else {
+                                            var msg = 'Error: "' + personID + '" is not a valid person ID';
+                                            log(msg);
+                                            alert(msg);
+                                        }
+                                    })
+                                )
+                                .append('<br/>')
+                                .append($('<input></input>', {
+                                    type: "text",
+                                    width: "196",
+                                    id: "log-" + uid,
+                                    readonly: "",
+                                    tabindex: -1
                                 })
-                                );
+                                    .css('background-color', 'rgba(180, 180, 180, 100)')
+                                    .css('font-style', 'italic')
+                                )
+                                ;
                     callback(html);
                     // thumbs.append(html);
                     //   thumbs.append('<br/>');

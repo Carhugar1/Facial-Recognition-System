@@ -28,7 +28,9 @@
         require_once('betaface/api.php');
         $api = new betaFaceApi(new logger());
         $result = $api->set_person_id($uid, $personID);
-        return $result['success'];
+        $result['uid'] = $uid;
+        $result['personID'] = $personID;
+        return $result;
     }
 ?>
 

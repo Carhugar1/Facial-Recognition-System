@@ -33,7 +33,7 @@
             } else if (!isset($_POST['personID'])) {
                 $aResult['error'] = 'Error: missing person id.';
             } else {
-                $aResult['success'] = setPersonID($_POST['uid'], $_POST['personID']);
+                $aResult['result'] = setPersonID($_POST['uid'], $_POST['personID']);
             }
             break;
     
