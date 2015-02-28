@@ -156,7 +156,7 @@ $(function () {
                                     .click(function () {
                                         var uid = $(this).data('uid');
                                         var personID = $('#name-' + uid).val();
-                                        if (personID && /[a-zA-Z ]@[a-zA-Z\.]/.test(personID)) {
+                                        if (personID && /^[a-zA-Z0-9 ]+@[a-zA-Z0-9\.]+$/.test(personID)) {
                                             $('body').spin("modal");
                                             $.ajax({
                                                 type: "POST",
