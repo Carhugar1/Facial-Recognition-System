@@ -32,16 +32,19 @@ $(function () {
                     $('body').spin("modal");
 
                     data = $.parseJSON(data);
-                    if (data) {
-                        if (data.uids) {
-                            // got UIDs back!
-                            generateThumbnails(data.uids);
-                        } else {
-                            log('Error: no faces found!<br/>');
-                        }
+                    if (data && data.length) {
+                        for (var i = 0; i < data.length; i++) {
+                            var dataEntry = data[i];
+                            if (dataEntry.results) {
+                                // got results back!
+                                generateThumbnails(dataEntry.results);
+                            } else {
+                                log('Error: no faces found!<br/>');
+                            }
 
-                        if (data.log) {
-                            log(data.log);
+                            if (dataEntry.log) {
+                                log(dataEntry.log);
+                            }
                         }
                     }
                 },
@@ -70,18 +73,20 @@ $(function () {
         table = $('<table></table>');
         thumbs.append(table); //table begin
 
-        for (var i = 0; i < uids.length; i++) {
-            var uid = uids[i];
-
+        var i = 0;
+        var tr;
+        for (var uid in uids) {
             // append new row every 5 faces
             if ((i % 5) == 0) {
                 table.append(tr = $("<tr></tr>"));
             }
+            i++;
 
             td = $('<td></td>');
             tr.append(td); //table data
 
-            makeThumbnail(uid, (function (td) {
+            var matches = uids[uid].matches;
+            makeThumbnail(uid, matches, (function (td) {
                 return function (thumbHTML) {
                     td.append(thumbHTML);
                 }
@@ -89,7 +94,7 @@ $(function () {
         }
     }
 
-    function makeThumbnail(uid, callback) {
+    function makeThumbnail(uid, matches, callback) {
         $.ajax({
             type: 'POST',
             url: 'php/dbhandler.php',  //Server script to process data
@@ -99,6 +104,8 @@ $(function () {
             success: function (data) {
                 if (!('error' in data)) {
                     var faceThumbnail = 'data:image/jpeg;base64,' + $.parseJSON(data.img)[0];
+                    var text = computeText(matches);
+
                     var html = $('<div></div>')
                                 .attr('id', uid)
                                 .append($('<img></img>', {
@@ -109,111 +116,16 @@ $(function () {
                                 })
                                 )
                                 .append('<br/>')
-                                .append($('<input></input>', {
-                                    type: "text",
-                                    width: "196",
-                                    id: 'name-' + uid
-                                })
-                                    .keypress(function (e) {
-                                        if (e.which == 13) {
-                                            $('#setname-' + uid).click();
-                                        }
-                                    })
-                                )
-                                .append('<br/>')
-                                .append($('<input></input>', {
-                                    type: "button",
-                                    width: "120",
-                                    value: "Not a Face?",
-                                    id: "notaface-" + uid,
-                                    tabindex: -1
-                                })
-                                    .click(function () {
-                                        if ($(this).attr('value') === 'Show Image') {
-                                            $(this).attr('value', 'Not a Face?');
-                                            $('#img-' + uid).show();
-                                            $('#name-' + uid).show();
-                                            $('#setname-' + uid).show();
-                                            $('#log-' + uid).show();
-                                        } else {
-                                            $(this).attr('value', 'Show Image');
-                                            $('#img-' + uid).hide();
-                                            $('#name-' + uid).hide();
-                                            $('#setname-' + uid).hide();
-                                            $('#log-' + uid).hide();
-                                        }
-                                    })
-                                    .css('margin-left', 'auto')
-                                    .css('margin-right', 'auto')
-                                )
-                                .append($('<input></input>', {
-                                    type: "button",
-                                    width: "80",
-                                    value: "Set Name",
-                                    id: "setname-" + uid,
-                                    tabindex: -1
-                                })
-                                    .data('uid', uid)
-                                    .click(function () {
-                                        var uid = $(this).data('uid');
-                                        var personID = $('#name-' + uid).val();
-                                        var personIDRegex = /^[a-zA-Z0-9_]+@[a-zA-Z0-9-_\.]+$/;
-                                        var regexMatches = personIDRegex.test(personID);
-                                        if (personID && regexMatches) {
-                                            $('body').spin("modal");
-                                            $.ajax({
-                                                type: "POST",
-                                                url: 'php/dbhandler.php',
-                                                dataType: 'json',
-                                                data: { functionname: 'setPersonID', uid: uid, personID: personID },
-
-                                                success: function (obj, textstatus) {
-                                                    $('body').spin("modal");
-                                                    if (!('error' in obj)) {
-                                                        console.log(obj);
-                                                        if (obj.result.success) {
-                                                            $('#log-' + uid).val('Name: ' + obj.result.personID);
-                                                        }
-                                                    }
-                                                    else {
-                                                        console.log(obj.error);
-                                                    }
-
-                                                },
-
-                                                error: function (error) {
-                                                    $('body').spin("modal");
-                                                    console.log('Error: ' + error);
-                                                }
-                                            });
-                                        } else {
-                                            var msg = '<p>Error: "' + personID + '" is not a valid person ID. <br/><br/>' +
-                                                        'Must match ' + personIDRegex + "</p>";
-                                            log(msg);
-                                            $('#dialogDiv')
-                                            .html(msg)
-                                            .dialog({
-                                                modal: true,
-                                                width: 500,
-                                                buttons: {
-                                                    Ok: function () {
-                                                        $(this).dialog("close");
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    }
-                                ))
-                                .append('<br/>')
-                                .append($('<input></input>', {
-                                    type: "text",
+                                .append($('<textarea></textarea>', {
+                                    rows: "5",
                                     width: "196",
                                     id: "log-" + uid,
                                     readonly: "",
                                     tabindex: -1
                                 })
-                                    .css('background-color', 'rgba(180, 180, 180, 100)')
+                                    .css('background-color', 'rgba(200, 200, 200, 100)')
                                     .css('font-style', 'italic')
+                                    .text(text)
                                 )
                                 ;
                     callback(html);
@@ -226,6 +138,38 @@ $(function () {
             },
             error: function (error) { glob = error; log('Error: ' + error); }
         });
+    }
+
+    function computeText(matches) {
+        var results = [];
+        for (var personName in matches) {
+            var conf = parseFloat(matches[personName]);
+            var name = personName.substring(0, personName.search(/[0-9]/));
+
+            if (results[name] === undefined) {
+                results[name] = [];
+                results[name]['conf'] = conf;
+                results[name]['count'] = 1;
+            } else {
+                results[name]['conf'] += conf;
+                results[name]['count'] += 1;
+            }
+        }
+
+        var ret = "";
+        var vals = [];
+        for (var name in results) {
+            vals.push({ name: name, conf: results[name]['conf'], count: results[name]['count'] });
+        }
+        vals.sort(function (a, b) {
+            return b.conf - a.conf;
+        });
+
+        for (var i = 0; i < vals.length; i++) {
+            ret += vals[i].name + ' => ' + ('' + (vals[i].conf / vals[i].count)).substring(0, 5) + '\n';
+        }
+
+        return ret;
     }
 
     $('#fileUpload').click(function () {
