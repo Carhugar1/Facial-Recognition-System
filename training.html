@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Facial Recognition System - Training</title>
+        <link rel="stylesheet" href="css/mainpage.css" />
+    </head>
+    <body>
+        <b>Upload Training Images:&nbsp;&nbsp;</b>
+        <form enctype="multipart/form-data">
+            <input name="file[]" id="trainingFiles" multiple type="file" />
+            <input type="button" value="Upload" id="fileUpload" />
+        </form>
+        <progress value="0" max="1"></progress>
+        <br />
+        <br />
+
+        <div id="content" class="content">
+            <!-- content -->
+        </div>
+
+        <div id="thumbnails">
+            <!-- thumbnails -->
+        </div>
+
+        <div id="dialogDiv">
+            <!-- dialog div -->     
+        </div>
+
+        <link rel="stylesheet" href="js/jquery-ui.min.css">
+        <script src="js/external/jquery/jquery.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/spin.js"></script>
+        <script type="text/javascript" src="js/FacialRecognitionTraining.js"></script>
+    </body>
+</html>

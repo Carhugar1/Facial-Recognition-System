@@ -1,5 +1,5 @@
 <?php
-	require_once('betaface/api.php');
+    require_once('betaface/api.php');
     require_once('dbfunctions.php');
 
     //
@@ -28,6 +28,6 @@
         }
     }
 
-    echo json_encode($resultArr);
+    echo json_encode[$resultArr];
 ?>
 
