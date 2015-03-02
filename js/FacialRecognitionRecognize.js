@@ -159,14 +159,14 @@ $(function () {
         var ret = "";
         var vals = [];
         for (var name in results) {
-            vals.push({ name: name, conf: results[name]['conf'], count: results[name]['count'] });
+            vals.push({ name: name, conf: results[name]['conf']/results[name]['count'] });
         }
         vals.sort(function (a, b) {
             return b.conf - a.conf;
         });
 
         for (var i = 0; i < vals.length; i++) {
-            ret += vals[i].name + ' => ' + ('' + (vals[i].conf / vals[i].count)).substring(0, 5) + '\n';
+            ret += vals[i].name + ' => ' + ('' + vals[i].conf).substring(0, 5) + '\n';
         }
 
         return ret;
