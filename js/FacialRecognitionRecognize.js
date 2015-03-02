@@ -6,9 +6,10 @@ $(function () {
         $('#content').append(msg + "<br/>");
     }
 
-    function doTraining(formData) {
+    function doRecognize(data) {
         if (window.FormData) {
-            var formData = new FormData(formData);
+            var formData = new FormData(data);
+            formData.append('namespace', $('#namespace').val())
             $('body').spin("modal");
 
             $.ajax({
@@ -195,8 +196,8 @@ $(function () {
                                                 modal: true,
                                                 width: 500,
                                                 buttons: {
-                                                    Ok: function() {
-                                                          $(this).dialog("close");   
+                                                    Ok: function () {
+                                                        $(this).dialog("close");
                                                     }
                                                 }
                                             });
@@ -227,56 +228,42 @@ $(function () {
         });
     }
 
-    function retrieveMatch(img) {
-
-    }
-
     $('#fileUpload').click(function () {
-        log("");
-        log("Uploading " + $('#trainingFiles')[0].files.length + " images (" +
-                $.map($('#trainingFiles')[0].files, (function (file) { return file.name; })) + ")");
-        doTraining($('form')[0]);
-    });
-    $('#recognizeBtn').change(function () {
-        log("Uploading " + this.files.length + " images...");
-        file = this.files[0];
-    });
-
-    var entityMap = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': '&quot;',
-        "'": '&#39;',
-        "/": '&#x2F;'
-    };
-
-    function escapeHtml(string) {
-        return String(string).replace(/[&<>"'\/]/g, function (s) {
-            return entityMap[s];
-        });
-    }
-
-    $('#getImages').click(function () {
         var namespace = $('#namespace').val();
-        $.ajax({
-            type: "POST",
-            url: 'php/dbhandler.php',
-            dataType: 'json',
-            data: { functionname: 'getUIDFromNamespace', namespace: namespace },
-
-            success: function (obj, textstatus) {
-                if (!('error' in obj)) {
-                    $('#imgs').text(obj.result);
+        var namespaceRegex = /^[a-zA-Z0-9-_\.]+$/;
+        if (!namespaceRegex.test(namespace)) {
+            var msg = '<p>Error: "' + namespace + '" is not a valid namespace. <br/><br/>' +
+                                                        'Must match ' + namespaceRegex + "</p>";
+            $('#dialogDiv')
+            .html(msg)
+            .dialog({
+                modal: true,
+                width: 500,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog("close");
+                    }
                 }
-                else {
-                    console.log(obj.error);
+            });
+        } else if ($('#recognizeFile')[0].files.length == 0) {
+            var msg = '<p>Error: must select a file to recognize.</p>';
+            $('#dialogDiv')
+            .html(msg)
+            .dialog({
+                modal: true,
+                width: 500,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog("close");
+                    }
                 }
-            },
-
-            error: function (error) {
-                console.log('Error: ' + error);
-            }
-        });
+            });
+        } else {
+            log("");
+            var l = $('#recognizeFile')[0].files.length;
+            log("Uploading " + l + " image" + (l == 1 ? "" : "s") + " (" +
+                    $.map($('#recognizeFile')[0].files, (function (file) { return file.name; })) + ")");
+            doRecognize($('#recognizeForm')[0]);
+        }
     });
 });

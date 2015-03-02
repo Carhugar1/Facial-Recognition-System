@@ -144,6 +144,49 @@ class betaFaceApi
         return $result['face_uid'];
     }
     
+    function recognize_faces_multiple($filename, $namespace) {
+         // Step 1: Encode image in base 64, upload it to service and get image ID
+        $image_raw = file_get_contents($filename);
+        $image_encoded = base64_encode($image_raw);
+        $params = array("base64_data" => $image_encoded,"original_filename" => $filename);
+        $result = $this->api_call('UploadNewImage_File', $params);
+        if(!$result)
+        {
+            $this->logger("API call to upload image failed!");
+            return false;
+        } 
+
+        $img_uid = $result['img_uid'];
+        $result = $this->api_call('GetImageInfo', array('image_uid' => $img_uid));
+        while(!$result['ready'])
+        {
+            sleep($this->poll_interval);
+            $result = $this->api_call('GetImageInfo', array('image_uid' => $img_uid));
+        }
+
+
+        // return list of face UIDs
+        $results = array();
+        $uids = $result['face_uid'];
+        foreach ($uids as $uid) {
+            // Step 3: Start a face recognition job
+            $params = array('face_uid' => $uid, 'namespace' => 'all@'.$namespace);        
+            $result = $this->api_call('Faces_Recognize', $params);
+        
+            // Step 4: Wait for the recognition job to finish
+            $params = array('recognize_job_id' => $result['recognize_job_id']);
+            $result = $this->api_call('GetRecognizeResult', $params);   
+            while(!$result['ready'])
+            {
+                sleep($this->poll_interval);
+                $result = $this->api_call('GetRecognizeResult', $params);
+            }      
+
+
+            $results[$uid]['matches'] = $result['matches'];          
+        }
+        return $results;
+    }
         
     function recognize_faces($filename, $namespace)
     {

@@ -9,6 +9,7 @@
         mkdir($uploadpath);
     }
     
+    $namespace = $_POST['namespace'];
     $numimgs = count($_FILES['file']['name']);
     for ($i=0; $i < $numimgs; $i++) {
         $log = new logger();
@@ -20,14 +21,14 @@
 			$api = new betaFaceApi($log);
 			$api->log_level = 2;
 
-			$result = $api->upload_face_multiple($target);            
-            $resultArr[$i] = array("uids" => $result, "log" => $log->get_log());
+			$result = $api->recognize_faces_multiple($target, $namespace);            
+            $resultArr[$i] = array("results" => $result, "log" => $log->get_log());
         } else {
             $log->log('[failed to upload' . $target . '...]<br/>');   
-            $resultArr[$i] = array("uids" => array(), "log" => $log->get_log());
+            $resultArr[$i] = array("results" => array(), "log" => $log->get_log());
         }
     }
 
-    echo json_encode[$resultArr];
+    echo json_encode($resultArr);
 ?>
 

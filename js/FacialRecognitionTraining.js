@@ -230,56 +230,25 @@ $(function () {
         });
     }
 
-    function retrieveMatch(img) {
-
-    }
-
     $('#fileUpload').click(function () {
-        log("");
-        log("Uploading " + $('#trainingFiles')[0].files.length + " images (" +
-                $.map($('#trainingFiles')[0].files, (function (file) { return file.name; })) + ")");
-        doTraining($('form')[0]);
-    });
-    $('#recognizeBtn').change(function () {
-        log("Uploading " + this.files.length + " images...");
-        file = this.files[0];
-    });
-
-    var entityMap = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': '&quot;',
-        "'": '&#39;',
-        "/": '&#x2F;'
-    };
-
-    function escapeHtml(string) {
-        return String(string).replace(/[&<>"'\/]/g, function (s) {
-            return entityMap[s];
-        });
-    }
-
-    $('#getImages').click(function () {
-        var namespace = $('#namespace').val();
-        $.ajax({
-            type: "POST",
-            url: 'php/dbhandler.php',
-            dataType: 'json',
-            data: { functionname: 'getUIDFromNamespace', namespace: namespace },
-
-            success: function (obj, textstatus) {
-                if (!('error' in obj)) {
-                    $('#imgs').text(obj.result);
+        var l = $('#trainingFiles')[0].files.length;
+        if (l == 0) {
+            var msg = '<p>Error: must select at least one file to train.</p>';
+            $('#dialogDiv')
+            .html(msg)
+            .dialog({
+                modal: true,
+                width: 500,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog("close");
+                    }
                 }
-                else {
-                    console.log(obj.error);
-                }
-            },
-
-            error: function (error) {
-                console.log('Error: ' + error);
-            }
-        });
+            });
+        } else {
+            log("Uploading " + l + " image" + (l == 1 ? "" : "s") + " (" +
+                        $.map($('#trainingFiles')[0].files, (function (file) { return file.name; })) + ")");
+            doTraining($('#trainingForm')[0]);
+        }
     });
 });
