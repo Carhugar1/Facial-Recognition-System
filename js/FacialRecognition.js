@@ -121,15 +121,15 @@ $(function () {
                                 )
                                 .append('<br/>')
                                 .append($('<input></input>', {
-                                        type: "button",
-                                        width: "120",
-                                        value: "Not a Face?",
-                                        id: "notaface-" + uid,
-                                        tabindex: -1
-                                    })
+                                    type: "button",
+                                    width: "120",
+                                    value: "Not a Face?",
+                                    id: "notaface-" + uid,
+                                    tabindex: -1
+                                })
                                     .click(function () {
                                         if ($(this).attr('value') === 'Show Image') {
-                                             $(this).attr('value', 'Not a Face?');
+                                            $(this).attr('value', 'Not a Face?');
                                             $('#img-' + uid).show();
                                             $('#name-' + uid).show();
                                             $('#setname-' + uid).show();
@@ -156,7 +156,9 @@ $(function () {
                                     .click(function () {
                                         var uid = $(this).data('uid');
                                         var personID = $('#name-' + uid).val();
-                                        if (personID && /^[a-zA-Z0-9 ]+@[a-zA-Z0-9\.]+$/.test(personID)) {
+                                        var personIDRegex = /^[a-zA-Z0-9_]+@[a-zA-Z0-9-_\.]+$/;
+                                        var regexMatches = personIDRegex.test(personID);
+                                        if (personID && regexMatches) {
                                             $('body').spin("modal");
                                             $.ajax({
                                                 type: "POST",
@@ -169,7 +171,7 @@ $(function () {
                                                     if (!('error' in obj)) {
                                                         console.log(obj);
                                                         if (obj.result.success) {
-                                                            $('#log-' + uid).val('Name set: ' + obj.result.personID);
+                                                            $('#log-' + uid).val('Name: ' + obj.result.personID);
                                                         }
                                                     }
                                                     else {
@@ -184,12 +186,23 @@ $(function () {
                                                 }
                                             });
                                         } else {
-                                            var msg = 'Error: "' + personID + '" is not a valid person ID';
+                                            var msg = '<p>Error: "' + personID + '" is not a valid person ID. <br/><br/>' +
+                                                        'Must match ' + personIDRegex + "</p>";
                                             log(msg);
-                                            alert(msg);
+                                            $('#dialogDiv')
+                                            .html(msg)
+                                            .dialog({
+                                                modal: true,
+                                                width: 500,
+                                                buttons: {
+                                                    Ok: function() {
+                                                          $(this).dialog("close");   
+                                                    }
+                                                }
+                                            });
                                         }
-                                    })
-                                )
+                                    }
+                                ))
                                 .append('<br/>')
                                 .append($('<input></input>', {
                                     type: "text",
