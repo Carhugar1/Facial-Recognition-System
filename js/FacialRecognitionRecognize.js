@@ -159,7 +159,7 @@ $(function () {
         var ret = "";
         var vals = [];
         for (var name in results) {
-            vals.push({ name: name, conf: results[name]['conf']/results[name]['count'] });
+            vals.push({ name: name, conf: results[name]['conf'] / results[name]['count'] });
         }
         vals.sort(function (a, b) {
             return b.conf - a.conf;
@@ -171,6 +171,12 @@ $(function () {
 
         return ret;
     }
+
+    $('#namespace').keypress(function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+        }
+    });
 
     $('#fileUpload').click(function () {
         var namespace = $('#namespace').val();
