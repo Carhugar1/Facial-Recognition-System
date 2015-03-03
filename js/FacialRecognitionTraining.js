@@ -133,12 +133,14 @@ $(function () {
                                     .click(function () {
                                         if ($(this).attr('value') === 'Show Image') {
                                             $(this).attr('value', 'Not a Face?');
+                                            $(this).css('width', '120');
                                             $('#img-' + uid).show();
                                             $('#name-' + uid).show();
                                             $('#setname-' + uid).show();
                                             $('#log-' + uid).show();
                                         } else {
                                             $(this).attr('value', 'Show Image');
+                                            $(this).css('width', '200');
                                             $('#img-' + uid).hide();
                                             $('#name-' + uid).hide();
                                             $('#setname-' + uid).hide();
