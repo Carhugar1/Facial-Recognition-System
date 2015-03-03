@@ -299,8 +299,11 @@ class betaFaceApi
      */
     function logger($text,$level=0)
     {
-        if($this->log_level>$level)
-            $this->log->log($text);
+        if($this->log_level > $level) {
+           
+        } else {
+             $this->log->log($text);
+        }
     }
     
     

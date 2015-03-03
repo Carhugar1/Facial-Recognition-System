@@ -17,7 +17,7 @@
         if (move_uploaded_file($_FILES['file']['tmp_name'][$i], $target)) {
             $log->log('[successfully uploaded ' . $target . ']<br/>');	  
 
-			$log->log('<br/>Starting betaface analysis...<br/>');
+			$log->log('Starting betaface analysis...');
 			$api = new betaFaceApi($log);
 			$api->log_level = 2;
 
